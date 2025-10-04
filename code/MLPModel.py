@@ -1,9 +1,5 @@
 import torch
-import torch.nn.init as init
-import numpy as np
-import math
 from torch import nn
-import torch.nn.functional as F
 from utils import cal_centr
 
 class ResBlock(nn.Module):
@@ -19,9 +15,9 @@ class ResBlock(nn.Module):
         return x
 
 
-class MyDenseLayer(nn.Module):
+class DenseLayer(nn.Module):
     def __init__(self, input_size, output_size, num_layers):
-        super(MyDenseLayer, self).__init__()
+        super(DenseLayer, self).__init__()
         self.fc1 = ResBlock(input_size, input_size)
         self.fc2 = nn.Linear(input_size, output_size)
         self.num_layers = num_layers
@@ -34,15 +30,14 @@ class MyDenseLayer(nn.Module):
         x = self.activation(x)
         return x
 
-class MyCLModel(nn.Module):
-    #bin_idx为[5000, 1]的矩阵，储存每个向量在哪个段
+class MLPEncoder(nn.Module):
     def __init__(self, in_dim, out_dim,
                  loss_function=None,
                  num_layers=1,
-                 device="cuda:0"
+                 device="cpu"
                  ):
-        super(MyCLModel, self).__init__()
-        self.layer = MyDenseLayer(in_dim, out_dim, num_layers=num_layers)
+        super(MLPEncoder, self).__init__()
+        self.layer = DenseLayer(in_dim, out_dim, num_layers=num_layers)
         self.loss_function = loss_function
         self.device=device
 
